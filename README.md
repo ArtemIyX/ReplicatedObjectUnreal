@@ -126,3 +126,8 @@ MyObjectPtr = nullptr;
 - Replicating arrays of UObjects takes a decent amount of time. Take into account that the inventory systems may take much longer to load than expected (more than 10ms).
 - Remember that an object will live as long as its actor lives.
 > I suggest deleting (ConditionalBeginDestroy()) objects before the actor is deleted to avoid problems with garbage collection and memory leaks.
+
+## Documentation
+Doxygen documentation: [GitHubPages](https://artemiyx.github.io/ReplicatedObjectUnrealDoc/annotated.html)
+
+Documentation sources: [GitHub](https://github.com/ArtemIyX/ReplicatedObjectUnrealDoc)
