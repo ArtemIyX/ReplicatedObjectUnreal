@@ -1,4 +1,4 @@
-# Replicated UObject for Unreal Engine 5.2
+# Replicated UObject for Unreal Engine 5.3
 As you may know Unreal Engine does not replicate UObjects. But in some solutions, such as inventory, it can come in handy very often.
 
 This plugin provides a simple solution to replicate UObjects.
@@ -16,7 +16,7 @@ public:
   virtual bool IsSupportedForNetworking() const override { return true; }
 }
 ```
-- Create a UPROPERTY variable with a pointer to your object. Create an object of your class.
+- Create a UPROPERTY variable with a pointer to your object.
 ```C++
 class YOUR_API AMyActor : public AActor {
 public:
@@ -55,7 +55,7 @@ bool AMyActor::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FRe
 > Note that it is desirable to make the Outer of the object an Actor.
 Otherwise RPC will not work, and replication will work only if the Outer of your Outer is an Actor.
 ```C++
-void AReplicatedActorExample::BeginPlay()
+void AMyActor::BeginPlay()
 {
   Super::BeginPlay();
   if (HasAuthority())
@@ -104,3 +104,25 @@ bool AReplicatedActorExample::ReplicateSubobjects(UActorChannel* Channel, FOutBu
 	return sup;
 }
 ```
+- If you want to move an object between actors, then it's worth remembering how replication works in the Unreal Engine.
+> You can't just put a variable into another actor: its Outer will not change.
+To do this, you should use the Rename method. 
+```C++
+AActor* anotherActor = ...;
+MyObjectPtr->Rename(nullptr, anotherActor);
+```
+- It should be noted that the Rename function is quite slow and it will update on the client with a long delay. 
+> There may be bugs when using the variable on the client. So I recommend DuplicateObject().
+```C++
+AReplicatedActorExample* anotherActor = ...;
+UAdvancedReplicatedObject* copy = DuplicateObject(MyObjectPtr, anotherActor);
+anotherActor->MyObjectPtr = copy;
+MyObjectPtr->ConditionalBeginDestroy();
+MyObjectPtr = nullptr;
+```
+- Replication of large objects takes a long time. I recommend using direct TCP connection for large tasks like procedural generation or huge inventories in MMO RPG.
+- Replication was tested only on the Dedicated Server. Listen server was not tested.
+- Sometimes it is more advantageous to use RPC events to transfer bytes rather than replicating UObjects.
+- Replicating arrays of UObjects takes a decent amount of time. Take into account that the inventory systems may take much longer to load than expected (more than 10ms).
+- Remember that an object will live as long as its actor lives.
+> I suggest deleting (ConditionalBeginDestroy()) objects before the actor is deleted to avoid problems with garbage collection and memory leaks.
