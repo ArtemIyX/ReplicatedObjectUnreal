@@ -17,7 +17,7 @@
  * @note UObject itself does not support replication natively, so this class provides
  *       mechanisms to replicate properties and manage network-related functionality.
  */
-UCLASS()
+UCLASS(Blueprintable, BlueprintType)
 class REPLICATEDOBJECT_API UAdvancedReplicatedObject : public UObject
 {
 	GENERATED_BODY()
