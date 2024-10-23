@@ -16,7 +16,8 @@ void UAdvancedReplicatedObject::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	DOREPLIFETIME(UAdvancedReplicatedObject, Owner);
 }
 
-bool UAdvancedReplicatedObject::CallRemoteFunction(UFunction* Function, void* Parms, FOutParmRec* OutParms, FFrame* Stack)
+bool UAdvancedReplicatedObject::CallRemoteFunction(UFunction* Function, void* Parms, FOutParmRec* OutParms,
+                                                   FFrame* Stack)
 {
 	bool bProcessed = false;
 
@@ -48,7 +49,8 @@ int32 UAdvancedReplicatedObject::GetFunctionCallspace(UFunction* Function, FFram
 	return FunctionCallspace::Local;
 }
 
-bool UAdvancedReplicatedObject::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+bool UAdvancedReplicatedObject::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch,
+                                                    FReplicationFlags* RepFlags)
 {
 	return false;
 }
@@ -64,7 +66,7 @@ void UAdvancedReplicatedObject::PostInitProperties()
 
 void UAdvancedReplicatedObject::BeginDestroy()
 {
-	if(GetWorld())
+	if (GetWorld())
 	{
 		ObjectEndPlay();
 	}
@@ -78,7 +80,7 @@ AActor* UAdvancedReplicatedObject::GetOwner() const
 
 void UAdvancedReplicatedObject::SetOwner(AActor* NewOwner)
 {
-	if (Owner != NewOwner && !this->HasAnyFlags(RF_InternalPendingKill | RF_InternalGarbage))
+	if (Owner != NewOwner && !IsValid(this))
 	{
 		Owner = NewOwner;
 	}
